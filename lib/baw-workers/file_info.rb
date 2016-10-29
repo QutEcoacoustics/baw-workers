@@ -2,6 +2,8 @@ module BawWorkers
   # Helpers to get info from files.
   class FileInfo
 
+    # Create a FileInfo instance.
+    # @param [BawAudioTools::AudioBase] audio_base
     def initialize(audio_base)
       @audio = audio_base
     end
@@ -181,6 +183,21 @@ module BawWorkers
         result[:extension] = extension.blank? ? '' : extension
       end
       result
+    end
+
+    # Convert a .wac file to a .wav file in the same directory.
+    # @param [String] file_path
+    # @return [String] converted file path
+    def convert_wac_to_wav(file_path)
+      ext = File.extname(file_path)
+      fail BawAudioTools::Exceptions::AudioToolError, 'Can only convert from .wac' if ext != '.wac'
+
+      source = File.expand_path(file_path)
+      target = File.join(File.dirname(source), File.basename(source, '.wac') + '.wav')
+
+      # only try to create the wav file if it doesn't already exist
+      @audio.modify(source, target) unless File.size?(target)
+      target
     end
 
   end

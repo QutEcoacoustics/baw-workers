@@ -138,7 +138,9 @@ module BawWorkers
                 mp3splt: BawWorkers::Settings.audio_tools.mp3splt_executable,
                 sox: BawWorkers::Settings.audio_tools.sox_executable,
                 wavpack: BawWorkers::Settings.audio_tools.wavpack_executable,
-                shntool: BawWorkers::Settings.audio_tools.shntool_executable
+                shntool: BawWorkers::Settings.audio_tools.shntool_executable,
+                wav2png: BawWorkers::Settings.audio_tools.wav2png_executable,
+                wac2wav: BawWorkers::Settings.audio_tools.wac2wav_executable
             })
 
         BawWorkers::Config.spectrogram_helper = BawAudioTools::Spectrogram.from_executables(

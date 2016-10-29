@@ -292,6 +292,24 @@ module BawWorkers
             @logger.info(@class_name) {
               "Source file #{file_path} was successfully renamed to #{renamed_source_file}."
             }
+
+            # if this is a wav file, and a .wac file exists, rename the .wac file as well
+            file_ext = File.extname(file_path)
+            wac_file = file_path[0..-4]+'wac'
+            if file_ext == '.wav' && File.exists?(wac_file)
+              renamed_wac_file = wac_file + '.completed'
+              File.rename(wac_file, renamed_wac_file)
+              if File.exists?(renamed_wac_file)
+                @logger.info(@class_name) {
+                  "Source .wac file #{wac_file} was successfully renamed to #{renamed_wac_file}."
+                }
+              else
+                @logger.warn(@class_name) {
+                  "Source .wac file #{wac_file} was not renamed."
+                }
+              end
+            end
+
           else
             @logger.warn(@class_name) {
               "Source file #{file_path} was not renamed."
