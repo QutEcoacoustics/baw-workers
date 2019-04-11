@@ -221,7 +221,7 @@ describe BawWorkers::Harvest::GatherFiles do
                  item[:file_rel_path] == 'one/two/six/prefix_20140101_235959+10.flac' }).to_not be_nil
 
       expect(results.find { |item| !item.include?(:metadata) &&
-                 item[:file_rel_path] == 'one/two/seven/prefix_20140101_235959+10.wac' }).to_not be_nil
+                 item[:file_rel_path] == 'one/two/seven/prefix_20140101_235959+10.wav' }).to_not be_nil
     end
 
     it 'should error on read-only directory' do

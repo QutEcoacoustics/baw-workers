@@ -183,10 +183,10 @@ describe BawWorkers::Harvest::SingleFile do
       password = 'password'
       auth_token = 'auth token this is'
 
-      file_hash = 'SHA256::c6d561c91664a92a1598bda3b79734d5ee29266ad0411ffaea1188f29d5b6439'
+      file_hash = 'SHA256::b06458c96ac2de75d77b83e1b3acb3e64b84a4bfe671c794153855bf7b5e96fd'
       recorded_date = '2014-10-12T18:14:55.000+10:00'
       uuid = 'fb4af424-04c1-4739-96e3-23f8dc719665'
-      original_format = 'wac'
+      original_format = 'wav'
 
       request_login_body = get_api_security_request(email, password)
       response_login_body = get_api_security_response(user_name, auth_token)
@@ -196,16 +196,16 @@ describe BawWorkers::Harvest::SingleFile do
           uploader_id: 30,
           recorded_date: recorded_date,
           site_id: 20,
-          duration_seconds: 6.577,
+          duration_seconds: 6.576,
           sample_rate_hertz: 22050,
           channels: 2,
-          bit_rate_bps: 16,
-          media_type: 'audio/x-waac',
-          data_length_bytes: 394644,
+          bit_rate_bps: 705600,
+          media_type: 'audio/wav',
+          data_length_bytes: 580082,
           file_hash: file_hash,
-          original_file_name: 'test_20141012_181455.wac',
+          original_file_name: 'test_20141012_181455.wav',
           notes: {
-              relative_path: 'test_20141012_181455.wac',
+              relative_path: 'test_20141012_181455.wav',
               sensor_type: 'SM2',
               information: [
                   'stripped left channel due to bad mic',
@@ -221,15 +221,15 @@ describe BawWorkers::Harvest::SingleFile do
           data: {
               recorded_date: '2014-10-12T08:14:55Z',
               site_id: 20,
-              duration_seconds: 6.577,
+              duration_seconds: 6.576,
               sample_rate_hertz: 22050,
               channels: 2,
-              bit_rate_bps: 16,
-              media_type: 'audio/x-waac',
-              data_length_bytes: 394644,
+              bit_rate_bps: 705600,
+              media_type: 'audio/wav',
+              data_length_bytes: 580082,
               file_hash: file_hash,
               status: 'new',
-              original_file_name: 'test_20141012_181455.wac',
+              original_file_name: 'test_20141012_181455.wav',
 
               created_at: '2014-10-13T05:21:13Z',
               id: 177,
@@ -289,7 +289,9 @@ describe BawWorkers::Harvest::SingleFile do
 
       # ensure source file is renamed to *.completed
       expect(File.exists?(dest_audio_file)).to be_falsey
+      expect(File.exists?(dest_audio_file[0..-4]+'wav')).to be_falsey
       expect(File.exists?(dest_audio_file+'.completed')).to be_truthy
+      expect(File.exists?(dest_audio_file[0..-4]+'wav.completed')).to be_truthy
 
       # clean up
       FileUtils.rm_rf(sub_folder)

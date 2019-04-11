@@ -147,16 +147,16 @@ module BawWorkers
 
         dir_settings = get_folder_settings(File.join(File.dirname(path), @config_file_name)) if dir_settings.blank?
 
-        basic_info, advanced_info = file_info(path, dir_settings[:utc_offset])
+        basic_info, advanced_info, new_path = file_info(path, dir_settings[:utc_offset])
 
         if basic_info.blank? || advanced_info.blank?
-          @logger.warn(@class_name) { "Not enough information for #{path}." }
+          @logger.warn(@class_name) { "Not enough information for #{new_path}." }
           {}
         else
-          @logger.debug(@class_name) { "Complete information found for #{path}." }
+          @logger.debug(@class_name) { "Complete information found for #{new_path}." }
           result = {}
           result = result.merge(basic_info).merge(dir_settings).merge(advanced_info)
-          result[:file_rel_path] = Pathname.new(path).relative_path_from(Pathname.new(top_dir)).to_s
+          result[:file_rel_path] = Pathname.new(new_path).relative_path_from(Pathname.new(top_dir)).to_s
           result
         end
       end
@@ -167,6 +167,25 @@ module BawWorkers
       # @return [Array] basic_info, advanced_info
       def file_info(file, utc_offset)
         basic_info, advanced_info = nil
+
+        if File.extname(file) == '.wac'
+          begin
+            wac_file = file
+            @logger.warn(@class_name) {
+              "Converting from .wac file #{wac_file}"
+            }
+            wav_file = @file_info_helper.convert_wac_to_wav(wac_file)
+            @logger.warn(@class_name) {
+              "Converted to .wav file #{wav_file} from .wac file #{wac_file}"
+            }
+            file = wav_file
+          rescue StandardError => e
+            @logger.error(@class_name) {
+              "Could not convert .wac file #{file} using utc offset '#{utc_offset}': #{format_error(e)}"
+            }
+            raise
+          end
+        end
 
         begin
           basic_info = @file_info_helper.basic(file)
@@ -186,7 +205,7 @@ module BawWorkers
           }
         end
 
-        [basic_info, advanced_info]
+        [basic_info, advanced_info, file]
       end
 
       # Get all files in a directory.
